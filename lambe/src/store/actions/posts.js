@@ -1,20 +1,40 @@
-import { SET_POSTS, ADD_COMMENT } from './actionTypes'
+import { 
+    SET_POSTS
+    , ADD_COMMENT
+    , CREATING_POSTS
+    , POST_CREATED 
+} from './actionTypes'
 import axios from 'axios'
 
 export const addPost = post => {
    
     return dispatch => {
+        dispatch(creatingPost());
         axios.post('/posts.json', { ...post })
             .catch(err => console.log(err))
-            .then(res => console.log(res.data));
+            .then(res => {
+                
+                dispatch(getPosts());
+                dispatch(postCreated());
+            });
     }
 
 }
 
 export const addComment = payload => {
-    return {
-        type: ADD_COMMENT,
-        payload
+    return dispatch => {
+        console.log(payload)
+        axios.get(`/posts/${payload.postId}.json`)
+            .catch(err => console.log(err))
+            .then(res => {
+                const comments = res.data.comments || [];
+                comments.push(payload.comment);
+                axios.patch(`/posts/${payload.postId}.json`, { comments })
+                    .catch(err => console.log(err))
+                    .then(res => {
+                        dispatch(getPosts());
+                    });
+            });
     }
 }
 
@@ -38,8 +58,20 @@ export const getPosts = () => {
                         id: key,
                     });
                 }
-                dispatch(setPosts(posts));
+                dispatch(setPosts(posts.reverse()));
             });
 
+    }
+}
+
+export const creatingPost = () => {
+    return {
+        type: CREATING_POSTS
+    }
+}
+
+export const postCreated = () => {
+    return {
+        type: POST_CREATED
     }
 }

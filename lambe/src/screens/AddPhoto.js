@@ -25,6 +25,16 @@ class AddPhoto extends Component {
         comment: '',
     }
 
+    componentDidUpdate = prevProps => {
+        if (prevProps.loading && !this.props.loading) {
+            this.setState({
+                image: null,
+                comment: ''
+            });
+            this.props.navigation.navigate('Feed');
+        }
+    }
+
     pickImage = () => {
 
         if (!this.props.name) {
@@ -60,9 +70,6 @@ class AddPhoto extends Component {
                 comment: this.state.comment
             }]
         });
-
-        this.setState({ image: null, comment: ''});
-        this.props.navigation.navigate('Feed');
     }
 
     render () {
@@ -80,7 +87,9 @@ class AddPhoto extends Component {
                         style={styles.input} value={this.state.commnet}
                         onChangeText={comment => this.setState({ comment })}
                         editable={this.props.name !== null}/>
-                    <TouchableOpacity onPress={this.save} style={styles.button}>
+                    <TouchableOpacity onPress={this.save} 
+                        style={[styles.button, this.props.loading ? styles.buttonDisabled : null]}
+                        disabled={this.props.loading}>
                         <Text style={styles.buttonText}>Salvar</Text>
                     </TouchableOpacity>
                 </View>
@@ -118,13 +127,17 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
         width: '90%'
+    },
+    buttonDisabled: {
+        backgroundColor: '#AAA'
     }
 });
 
-const mapStateToProps = ({ user }) => {
+const mapStateToProps = ({ user, posts }) => {
     return {
         email: user.email,
         name: user.name,
+        loading: posts.isUpload
     }
 }
 
