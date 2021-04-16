@@ -13,13 +13,18 @@ class Login extends Component {
 
     state = {
         name: 'Eduardo',
-        email: 'sdfsdf@sddfs.com',
+        email: 'edutm87@hotmail.com',
         password: '123456'
+    }
+
+    componentDidUpdate = prevProps => {
+        if (prevProps.isLoading && !this.props.isLoading) {
+            this.props.navigation.navigate('Profile');
+        }
     }
 
     login = () => {
         this.props.onLogin({ ...this.state });
-        this.props.navigation.navigate('Profile');
     }
 
     render() {
@@ -75,6 +80,11 @@ const styles = StyleSheet.create({
     }
 });
 
+const mapStateToProps = ({ user })  => {
+    return {
+        isLoading: user.isLoading
+    }
+}
 
 const mapDispatchToProps = dispatch => {
     return {
@@ -82,4 +92,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -5,6 +5,7 @@ import {
     , POST_CREATED 
 } from './actionTypes'
 import axios from 'axios'
+import { setMessage } from './message'
 
 export const addPost = post => {
    
@@ -13,9 +14,13 @@ export const addPost = post => {
         axios.post('/posts.json', { ...post })
             .catch(err => console.log(err))
             .then(res => {
-                
                 dispatch(getPosts());
                 dispatch(postCreated());
+
+                dispatch(setMessage({
+                    title: 'Sucesso',
+                    text: 'Salvo com sucesso!'
+                }))
             });
     }
 
