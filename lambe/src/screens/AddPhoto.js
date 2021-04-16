@@ -16,6 +16,8 @@ import { addPost } from '../store/actions/posts'
 
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
+const noUser = "Você precisa esta logado para adicionar imagem!";
+
 class AddPhoto extends Component {
 
     state = {
@@ -24,6 +26,12 @@ class AddPhoto extends Component {
     }
 
     pickImage = () => {
+
+        if (!this.props.name) {
+            Alert.alert('Falha!', noUser);
+            return;
+        }
+
         launchCamera({
             title: 'Escolha a imagem',
             maxHeight: 600,
@@ -36,6 +44,12 @@ class AddPhoto extends Component {
     }
 
     save = async () => {
+
+        if (!this.props.name) {
+            Alert.alert('Falha!', noUser);
+            return;
+        }
+
         this.props.onAddPost({
             id: Math.random(),
             nickname: this.props.name,
@@ -64,7 +78,8 @@ class AddPhoto extends Component {
                     </TouchableOpacity>
                     <TextInput placeholder="Algum comentário para foto..."
                         style={styles.input} value={this.state.commnet}
-                        onChangeText={comment => this.setState({ comment })}/>
+                        onChangeText={comment => this.setState({ comment })}
+                        editable={this.props.name !== null}/>
                     <TouchableOpacity onPress={this.save} style={styles.button}>
                         <Text style={styles.buttonText}>Salvar</Text>
                     </TouchableOpacity>

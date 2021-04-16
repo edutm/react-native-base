@@ -8,10 +8,12 @@ import {
     Alert,
     StatusBar
 } from 'react-native'
+import { connect } from 'react-redux'
+import { addComment } from '../store/actions/posts'
 
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-export default class AddComments extends Component {
+class AddComments extends Component {
 
     state = {
         comment: '',
@@ -19,7 +21,14 @@ export default class AddComments extends Component {
     }
 
     handlerAddComment = () => {
-        Alert.alert("Adicionado!", this.state.comment);
+        this.props.onAddComment({
+            postId: this.props.postId,
+            comment: {
+                nickname: this.props.name,
+                comment: this.state.comment,
+            }
+        });
+        this.setState({ comment: '', editMode: false});
     }
 
     render () {
@@ -59,6 +68,7 @@ export default class AddComments extends Component {
         )
     }
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -74,4 +84,18 @@ const styles = StyleSheet.create({
     input: {
         width: '90%'
     }
-})
+});
+
+const mapStateToProps = ( { user} ) => {
+    return {
+        name: user.name
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddComment: payload => dispatch(addComment(payload))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddComments)
